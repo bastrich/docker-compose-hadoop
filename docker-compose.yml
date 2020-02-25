@@ -1,0 +1,152 @@
+version: "3.7"
+
+services:
+  namenode:
+    image: namenode
+    container_name: namenode
+    build:
+      context: ./
+      dockerfile: namenode/Dockerfile
+    ports: 
+      - 8001:8001
+    networks: 
+      - hadoop
+    volumes: 
+      - ./conf/hadoop:/etc/hadoop/conf
+      - ./conf/hive:/etc/hive/conf
+      - ./conf/tez:/etc/tez/conf
+      - ./conf/spark:/etc/spark/conf
+      - ./conf/flume:/etc/flume/conf
+
+  datanode_1:
+    image: datanode
+    container_name: datanode_1
+    build:
+      context: ./
+      dockerfile: datanode/Dockerfile
+    networks: 
+      - hadoop
+    volumes: 
+      - ./conf/hadoop:/etc/hadoop/conf
+      - ./conf/hive:/etc/hive/conf
+      - ./conf/tez:/etc/tez/conf
+      - ./conf/spark:/etc/spark/conf
+      - ./conf/flume:/etc/flume/conf
+
+  datanode_2:
+    image: datanode
+    container_name: datanode_2
+    build:
+      context: ./
+      dockerfile: datanode/Dockerfile
+    networks: 
+      - hadoop  
+    volumes: 
+      - ./conf/hadoop:/etc/hadoop/conf
+      - ./conf/hive:/etc/hive/conf
+      - ./conf/tez:/etc/tez/conf
+      - ./conf/spark:/etc/spark/conf
+      - ./conf/flume:/etc/flume/conf
+
+  nodemanager_1:
+    image: nodemanager
+    container_name: nodemanager_1
+    build:
+      context: ./
+      dockerfile: nodemanager/Dockerfile
+    ports:
+      - 8042:8042
+      - 5006:5005
+    networks: 
+      - hadoop
+    volumes: 
+      - ./conf/hadoop:/etc/hadoop/conf
+      - ./conf/hive:/etc/hive/conf
+      - ./conf/tez:/etc/tez/conf
+      - ./conf/spark:/etc/spark/conf
+      - ./conf/flume:/etc/flume/conf
+  
+  nodemanager_2:
+    image: nodemanager
+    container_name: nodemanager_2
+    build:
+      context: ./
+      dockerfile: nodemanager/Dockerfile
+    ports:
+      - 8043:8042
+      - 5007:5005
+    networks: 
+      - hadoop
+    volumes: 
+      - ./conf/hadoop:/etc/hadoop/conf
+      - ./conf/hive:/etc/hive/conf
+      - ./conf/tez:/etc/tez/conf
+      - ./conf/spark:/etc/spark/conf
+      - ./conf/flume:/etc/flume/conf
+
+  resourcemanager:
+    image: resourcemanager
+    container_name: resourcemanager
+    build:
+      context: ./
+      dockerfile: resourcemanager/Dockerfile
+    ports: 
+        - 9004:9004
+    networks: 
+      - hadoop
+    volumes: 
+      - ./conf/hadoop:/etc/hadoop/conf
+      - ./conf/hive:/etc/hive/conf
+      - ./conf/tez:/etc/tez/conf
+      - ./conf/spark:/etc/spark/conf
+      - ./conf/flume:/etc/flume/conf
+  
+  historyserver:
+    image: historyserver
+    container_name: historyserver
+    build:
+      context: ./
+      dockerfile: historyserver/Dockerfile
+    ports: 
+      - 1000:1000
+    networks: 
+      - hadoop
+    volumes: 
+      - ./conf/hadoop:/etc/hadoop/conf
+      - ./conf/hive:/etc/hive/conf
+      - ./conf/tez:/etc/tez/conf
+      - ./conf/spark:/etc/spark/conf
+      - ./conf/flume:/etc/flume/conf
+
+  hive-server:
+    image: hive
+    container_name: hive-server
+    build:
+      context: ./
+      dockerfile: hive/Dockerfile
+    ports: 
+      - 10000:10000
+      - 10002:10002
+    networks: 
+      - hadoop
+    volumes: 
+      - ./conf/hadoop:/etc/hadoop/conf
+      - ./conf/hive:/etc/hive/conf
+      - ./conf/tez:/etc/tez/conf
+      - ./conf/spark:/etc/spark/conf
+      - ./conf/flume:/etc/flume/conf
+  
+  rdbms:
+    image: postgres:12.1
+    container_name: rdbms
+    ports: 
+      - 5432:5432
+    networks: 
+      - hadoop
+    environment:
+      - POSTGRES_PASSWORD=1111
+      - POSTGRES_DB=metastore
+
+networks:
+  hadoop:
+    name: hadoop
